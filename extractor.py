@@ -32,7 +32,7 @@ def setup_argparse():
    parser.add_argument(
        "-m",
        "--mode",
-       choices=["json", "markdown"],
+       choices=["json", "markdown", "markdown_single", "print_books"],
        required=True,
        help="Output to either json or markdown"
    )
@@ -43,6 +43,13 @@ def setup_argparse():
        type=str,
        help="Output file location",
        required=True
+   )
+   
+   parser.add_argument(
+       "-b",
+       "--book",
+       help="Full book title if markdown_single mode is specified",
+       type=str.lower
    )
 
    return parser.parse_args()
@@ -55,7 +62,7 @@ def create_markdown_files(quotes : dict, markdown_path : str):
             with open(f"{markdown_path}{key}.md", "w") as f:
                 f.write(f"# {key}\n- Author: {quotes[key]["author"]}\n---\n")
 
-def write_quotes(quotes : dict, markdown_path : str):
+def write_quotes_to_markdown(quotes : dict, markdown_path : str):
     for key in quotes:
         with open(f"{markdown_path}/{key}.md", "a") as f:
             for nested_key in quotes[key]:
@@ -73,9 +80,28 @@ def main():
     if args.mode == "json":
         write_json(quotes, args.output)
         return
-    else:
+    elif args.mode == "markdown":
         create_markdown_files(quotes, args.output)
-        write_quotes(quotes, args.output)
+        write_quotes_to_markdown(quotes, args.output)
+        return
+    elif args.mode == "markdown_single":
+        if not args.book:
+            print("extractor: error: The following argument must be specified if markdown_single is set: -b/--book")
+            return
+        quotes_copy = quotes.copy()
+        for key in quotes:
+            if str(key).lower() != args.book:
+                quotes_copy.pop(key)
+        if not quotes_copy:
+            print(f"extractor: error: book {args.book} doesn't have any highlights.")
+        create_markdown_files(quotes_copy, args.output)
+        write_quotes_to_markdown(quotes_copy, args.output)
+    elif args.mode == "print_books":
+        if not args.book:
+            print("extractor: error: The following argument must be specified if print_books is set: -b/--book")
+            return
+        for key in quotes:
+            print(key)
         
 
 if __name__ == "__main__":
