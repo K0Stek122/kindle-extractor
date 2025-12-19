@@ -62,7 +62,7 @@ def create_markdown_files(quotes : dict, markdown_path : str):
             with open(f"{markdown_path}{key}.md", "w") as f:
                 f.write(f"# {key}\n- Author: {quotes[key]["author"]}\n---\n")
 
-def write_quotes_to_markdown(quotes : dict, markdown_path : str):
+def write_markdown(quotes : dict, markdown_path : str):
     for key in quotes:
         with open(f"{markdown_path}/{key}.md", "a") as f:
             for nested_key in quotes[key]:
@@ -73,33 +73,40 @@ def write_json(quotes : dict, output : str):
     with open(output, "w") as f:
         json_dump = json.dump(quotes, f, ensure_ascii=False, indent=4)
 
+def get_single_book_quotes(quotes : dict, book_name : str):
+    quotes_copy = quotes.copy()
+    for key in quotes:
+        if str(key).lower() != book_name:
+            quotes_copy.pop(key)
+    if not quotes_copy:
+        print(f"extractor: error: book {book_name} doesn't have any highlights.")
+    return quotes_copy
+
 def main():
     global args
     args = setup_argparse()
     quotes = parse_clippings(args) # Does the magic to My Clippings.txt
     if args.mode == "json":
         write_json(quotes, args.output)
-        return
+
     elif args.mode == "markdown":
         create_markdown_files(quotes, args.output)
-        write_quotes_to_markdown(quotes, args.output)
-        return
+        write_markdown(quotes, args.output)
+
     elif args.mode == "markdown_single":
         if not args.book:
             print("extractor: error: The following argument must be specified if markdown_single is set: -b/--book")
             return
-        quotes_copy = quotes.copy()
-        for key in quotes:
-            if str(key).lower() != args.book:
-                quotes_copy.pop(key)
-        if not quotes_copy:
-            print(f"extractor: error: book {args.book} doesn't have any highlights.")
+
+        quotes_copy = get_single_book_quotes(quotes, args.book)
         create_markdown_files(quotes_copy, args.output)
-        write_quotes_to_markdown(quotes_copy, args.output)
+        write_markdown(quotes_copy, args.output)
+
     elif args.mode == "print_books":
         if not args.book:
             print("extractor: error: The following argument must be specified if print_books is set: -b/--book")
             return
+
         for key in quotes:
             print(key)
         
