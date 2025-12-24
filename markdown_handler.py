@@ -15,3 +15,10 @@ def write_markdown(quotes : dict, markdown_path : str):
             for nested_key in quotes[key]:
                 if isinstance(quotes[key][nested_key], dict):
                     f.write(f"> {nested_key}\n- Page {quotes[key][nested_key]['page_number']}\n- Date Added: {quotes[key][nested_key]['date_added']}\n---\n")
+
+def write_markdown_single(quotes : dict, markdown_file : str):
+    with open(f"{markdown_file}", "w") as f:
+        for key in quotes:
+            for nested_key in quotes[key]:
+                if isinstance(quotes[key][nested_key], dict):
+                    f.write(f"> {nested_key}\n- Page {quotes[key][nested_key]['page_number']}\n- Date Added: {quotes[key][nested_key]['date_added']}\n---\n")

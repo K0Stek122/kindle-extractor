@@ -60,6 +60,15 @@ def write_json(quotes : dict, output : str):
         json_dump = json.dump(quotes, f, ensure_ascii=False, indent=4)
 
 def get_single_book_quotes(quotes : dict, book_name : str):
+    """Gets all quotes from a single book. Discards every other book.
+
+    Args:
+        quotes (dict): Dictionary of all quotes from My Clippings.txt
+        book_name (str): The book to get the quotes from.
+
+    Returns:
+        _type_: _description_
+    """
     quotes_copy = quotes.copy()
     for key in quotes:
         if str(key).lower() != book_name:
@@ -85,10 +94,11 @@ def main():
         if not args.book:
             print("extractor: error: The following argument must be specified if markdown_single is set: -b/--book")
             return
+        if Path(args.output).is_dir() or Path(args.output).suffix != ".md":
+            print("extractor: error: output path must be a file ending in .md")
 
         quotes_copy = get_single_book_quotes(quotes, args.book)
-        create_markdown_files(quotes_copy, args.output)
-        write_markdown(quotes_copy, args.output)
+        write_markdown_single(quotes_copy, args.output)
 
     elif args.mode == "print_books":
         for key in quotes:
