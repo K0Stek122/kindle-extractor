@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import datetime
 import json
 from parse_clippings import *
+from markdown_handler import *
 import os
 
 def type_txt_path(value):
@@ -54,21 +55,6 @@ def setup_argparse():
 
    return parser.parse_args()
 
-def create_markdown_files(quotes : dict, markdown_path : str):
-    if not Path(markdown_path).exists():
-        os.mkdir(markdown_path) 
-    for key in quotes:
-        if not Path(f"{markdown_path}/key.md").exists():
-            with open(f"{markdown_path}{key}.md", "w") as f:
-                f.write(f"# {key}\n- Author: {quotes[key]["author"]}\n---\n")
-
-def write_markdown(quotes : dict, markdown_path : str):
-    for key in quotes:
-        with open(f"{markdown_path}/{key}.md", "a") as f:
-            for nested_key in quotes[key]:
-                if isinstance(quotes[key][nested_key], dict):
-                    f.write(f"> {nested_key}\n- Page {quotes[key][nested_key]['page_number']}\n- Date Added: {quotes[key][nested_key]['date_added']}\n---\n")
-
 def write_json(quotes : dict, output : str):
     with open(output, "w") as f:
         json_dump = json.dump(quotes, f, ensure_ascii=False, indent=4)
@@ -83,13 +69,15 @@ def get_single_book_quotes(quotes : dict, book_name : str):
     return quotes_copy
 
 def main():
-    global args
     args = setup_argparse()
-    quotes = parse_clippings(args) # Does the magic to My Clippings.txt
+    quotes : dict = parse_clippings(args) # Does the magic to My Clippings.txt
     if args.mode == "json":
         write_json(quotes, args.output)
 
     elif args.mode == "markdown":
+        if not Path(args.output).is_dir():
+            print("extractor: error: output path must be a directory")
+            return
         create_markdown_files(quotes, args.output)
         write_markdown(quotes, args.output)
 
@@ -103,10 +91,6 @@ def main():
         write_markdown(quotes_copy, args.output)
 
     elif args.mode == "print_books":
-        if not args.book:
-            print("extractor: error: The following argument must be specified if print_books is set: -b/--book")
-            return
-
         for key in quotes:
             print(key)
         

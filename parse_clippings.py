@@ -30,17 +30,17 @@ def get_book_name_and_author(extract : str):
 
     return "", ""
 
-def get_page(extract_split : str):
+def get_page(extract : str):
     """Get page number of a specific extract.
 
     Args:
-        extract_split (str): extract after running .split(\n) on it
+        extract (str): extract
 
     Returns:
         int: page number
     """
     try:
-        return int(re.findall(r"page\s+(\d+)", extract_split)[0])
+        return int(re.findall(r"page\s+(\d+)", extract)[0])
     except:
         return -1
 
@@ -69,10 +69,10 @@ def get_extract_quote_metadata(extract : str):
     Returns:
         3-tuple: Containing (page, date, quote)
     """
-    extract = extract.split("\n")
-    page = get_page(extract[2])
-    date =  get_date(extract[2])
-    quote = extract[4]
+    extract_split = extract.split("\n")
+    page = get_page(extract)
+    date =  get_date(extract)
+    quote = extract_split[4] #Overhaul quote extraction
     return (page, date, quote)
 
 def parse_clippings(args : argparse.Namespace):
@@ -97,7 +97,7 @@ def parse_clippings(args : argparse.Namespace):
     """
 
     full_extracts = retrieve_clippings_from_file(args.input).split("==========")
-    full_extracts.pop()
+    full_extracts.pop() # Last element is always null.
 
     quotes = { }
     for extract in full_extracts:
