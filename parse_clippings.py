@@ -100,7 +100,7 @@ def parse_clippings(args : argparse.Namespace):
     full_extracts.pop() # Last element is always null.
 
     quotes = { }
-    for extract in full_extracts:
+    for id, extract in enumerate(full_extracts):
 
         book_name, book_author = get_book_name_and_author(extract)
         page, date, quote = get_extract_quote_metadata(extract)

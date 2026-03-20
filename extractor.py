@@ -80,6 +80,7 @@ def get_single_book_quotes(quotes : dict, book_name : str):
 def main():
     args = setup_argparse()
     quotes : dict = parse_clippings(args) # Does the magic to My Clippings.txt
+
     if args.mode == "json":
         write_json(quotes, args.output)
 
