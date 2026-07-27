@@ -111,6 +111,7 @@ def main():
             return
         if Path(args.output).is_dir() or Path(args.output).suffix != ".md":
             print("extractor: error: output path must be a file ending in .md")
+            return
 
         quotes_copy = get_single_book_quotes(quotes, args.book)
         write_markdown_single(quotes_copy, args.output)
