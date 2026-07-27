@@ -5,6 +5,7 @@ import json
 from parse_clippings import *
 from markdown_handler import *
 import os
+import sys
 
 def type_txt_path(value):
     path = Path(value)
@@ -87,6 +88,9 @@ def main():
         root = tk.Tk()
         root.withdraw()
         args.input = filedialog.askopenfilename()
+        # After all this if the input is still not specified just quit.
+        if not args.input:
+            sys.exit(1)
 
     quotes : dict = parse_clippings(args) # Does the magic to My Clippings.txt
 
