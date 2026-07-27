@@ -27,7 +27,7 @@ def setup_argparse():
        "--input",
        type=type_txt_path,
        help="Kindle's My Clippings.txt location",
-       required=True
+       required=False
    )
    
    parser.add_argument(
@@ -79,12 +79,22 @@ def get_single_book_quotes(quotes : dict, book_name : str):
 
 def main():
     args = setup_argparse()
+
+    if not args.input:
+        print("extractor: -i/--input is not specified. Please select My Clippings.txt.")
+        import tkinter as tk
+        from tkinter import filedialog
+        root = tk.Tk()
+        root.withdraw()
+        args.input = filedialog.askopenfilename()
+
     quotes : dict = parse_clippings(args) # Does the magic to My Clippings.txt
 
     if args.mode == "json":
         write_json(quotes, args.output)
 
     elif args.mode == "markdown":
+        # If path doesn't exist.
         if not Path(args.output).is_dir():
             print("extractor: error: output path must be a directory")
             return
@@ -101,6 +111,7 @@ def main():
         quotes_copy = get_single_book_quotes(quotes, args.book)
         write_markdown_single(quotes_copy, args.output)
 
+    # Does no writing at all, just prints all the books in the clippings file.
     elif args.mode == "print_books":
         for key in quotes:
             print(key)
