@@ -9,16 +9,26 @@ def create_markdown_files(quotes : dict, markdown_path : str):
             with open(f"{markdown_path}{key}.md", "w") as f:
                 f.write(f"# {key}\n- Author: {quotes[key]["author"]}\n---\n")
 
+def create_quote_string(quote, nested_key, page_number, date_added):
+    return f"> {quote}\n- Quote ID: {nested_key}\n- Page: {page_number}\n- Date Added: {date_added}\n---\n"
+
+
 def write_markdown(quotes : dict, markdown_path : str):
     for key in quotes:
         with open(f"{markdown_path}/{key}.md", "a") as f:
             for nested_key in quotes[key]:
                 if isinstance(quotes[key][nested_key], dict):
-                    f.write(f"> {quotes[key][nested_key]['quote']}\n- Page {quotes[key][nested_key]['page_number']}\n- Date Added: {quotes[key][nested_key]['date_added']}\n---\n")
+                    quote = quotes[key][nested_key]['quote']
+                    page_number = quotes[key][nested_key]['page_number']
+                    date_added = quotes[key][nested_key]['date_added']
+                    f.write(create_quote_string(quote, nested_key, page_number, date_added))
 
 def write_markdown_single(quotes : dict, markdown_file : str):
     with open(f"{markdown_file}", "w") as f:
         for key in quotes:
             for nested_key in quotes[key]:
                 if isinstance(quotes[key][nested_key], dict):
-                    f.write(f"> {quotes[key][nested_key]['quote']}\n- Page {quotes[key][nested_key]['page_number']}\n- Date Added: {quotes[key][nested_key]['date_added']}\n---\n")
+                    quote = quotes[key][nested_key]['quote']
+                    page_number = quotes[key][nested_key]['page_number']
+                    date_added = quotes[key][nested_key]['date_added']
+                    f.write(create_quote_string(quote, nested_key, page_number, date_added))
