@@ -1,6 +1,8 @@
 Markdown/
 *.json
 *.txt
+!tests/*.txt
 *.cpython
 __pycache__/
 *.pytest_cache
+*.md

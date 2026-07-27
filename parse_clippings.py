@@ -100,22 +100,28 @@ def parse_clippings(args : argparse.Namespace):
     full_extracts.pop() # Last element is always null.
 
     quotes = { }
-    for extract in full_extracts:
+    quote_id = 0
+    for id, extract in enumerate(full_extracts):
 
         book_name, book_author = get_book_name_and_author(extract)
         page, date, quote = get_extract_quote_metadata(extract)
 
-        if book_name not in quotes.keys():
+        if book_name not in quotes.keys(): # Book has not been encountered before.
+            quote_id = 0
             quotes[book_name] = {
-                "author" : book_author, 
-                quote : {
+                "author" : book_author,
+                quote_id : {
+                    "quote" : quote,
                     "page_number" : page,
                     "date_added" : date.strftime("%Y-%m-%d %X"),
                 }
             }
+            quote_id += 1
         else:
-            quotes[book_name][quote] = {
+            quotes[book_name][quote_id] = {
+                "quote" : quote,
                 "page_number" : page,
                 "date_added" : date.strftime("%Y-%m-%d %X")
             }
+            quote_id += 1
     return quotes
