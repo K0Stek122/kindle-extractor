@@ -6,7 +6,7 @@ def create_markdown_files(quotes : dict, markdown_path : str):
         os.mkdir(markdown_path) 
     for key in quotes:
         if not Path(f"{markdown_path}/key.md").exists():
-            with open(f"{markdown_path}{key}.md", "w") as f:
+            with open(f"{markdown_path}/{key}.md", "w") as f:
                 f.write(f"# {key}\n- Author: {quotes[key]["author"]}\n---\n")
 
 def create_quote_string(quote, nested_key, page_number, date_added):
